@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "aux-ng": {
+    "aux-ng-dev": {
       "projectType": "application",
       "schematics": {
         "@schematics/angular:component": {
@@ -17,7 +17,7 @@
         "build": {
           "builder": "@angular-devkit/build-angular:application",
           "options": {
-            "outputPath": "dist/aux-ng",
+            "outputPath": "dist/aux-ng-dev",
             "index": "src/index.html",
             "browser": "src/main.ts",
             "polyfills": [
@@ -40,7 +40,7 @@
           },
           "configurations": {
             "production": {
-              "outputPath": "dist/aux-ng",
+              "outputPath": "dist/aux-ng-dev",
               "deleteOutputPath": true,
               "budgets": [
                 {
@@ -71,10 +71,10 @@
           "builder": "@angular-devkit/build-angular:dev-server",
           "configurations": {
             "production": {
-              "buildTarget": "aux-ng:build:production"
+              "buildTarget": "aux-ng-dev:build:production"
             },
             "development": {
-              "buildTarget": "aux-ng:build:development"
+              "buildTarget": "aux-ng-dev:build:development"
             }
           },
           "defaultConfiguration": "development"
