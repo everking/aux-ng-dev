@@ -14,16 +14,16 @@ describe('AppComponent', () => {
     expect(app).toBeTruthy();
   });
 
-  it(`should have the 'aux-ng' title`, () => {
+  it(`should have the 'aux-ng-dev' title`, () => {
     const fixture = TestBed.createComponent(AppComponent);
     const app = fixture.componentInstance;
-    expect(app.title).toEqual('aux-ng');
+    expect(app.title).toEqual('aux-ng-dev');
   });
 
   it('should render title', () => {
     const fixture = TestBed.createComponent(AppComponent);
     fixture.detectChanges();
     const compiled = fixture.nativeElement as HTMLElement;
-    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, aux-ng');
+    expect(compiled.querySelector('h1')?.textContent).toContain('Hello, aux-ng-dev');
   });
 });
