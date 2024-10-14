@@ -3,10 +3,12 @@ import { Article, INVALID_ARTICLE } from "../interfaces/article";
 import { from, map, Observable, of, switchMap, take } from "rxjs";
 import { getHardcodedArticle } from './hardcoded.article';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
+import { LoginService } from './login.service';
 
 @Injectable({
   providedIn: 'root'
 })
+
 export class ArticleService {
   private articles: Article[] = [];
   private articleMap: Map<string, Article> = new Map();
@@ -23,7 +25,7 @@ export class ArticleService {
   public readonly NEW_LABEL: string = "[ new ]";
   public readonly BASE_FIRESTORE: string = "https://firestore.googleapis.com/v1";
 
-  constructor(private http: HttpClient) {
+  constructor(private http: HttpClient, private loginService: LoginService) {
   }
 
   public getSingleArticle(articleId: string | null): Observable<Article> {
@@ -81,7 +83,7 @@ export class ArticleService {
 
   public fetchAllArticlesFromFirestore(): Observable<Article[]> {
     const url = `${this.BASE_FIRESTORE}/projects/auxilium-420904/databases/aux-db/documents:runQuery`;
-    const headers: HttpHeaders = new HttpHeaders({'Content-Type': 'application/json'});
+    const headers: HttpHeaders = new HttpHeaders(this.getHeaders());
     const body = {
       structuredQuery: {
         from: [{collectionId: 'articles'}],
@@ -123,6 +125,15 @@ export class ArticleService {
     );
   }
 
+  private getHeaders() {
+    const header:any =  {
+      'Content-Type': 'application/json'
+    }
+    if (this.loginService.idToken) {
+      header['Authorization'] = `Bearer ${this.loginService.idToken}`;
+    }
+    return header
+  }
 
   public async fetchArticleFromFirestore(articleId: string): Promise<Article | null> {
     try {
@@ -138,9 +149,7 @@ export class ArticleService {
       }
       const response = await fetch(`${this.BASE_FIRESTORE}/projects/auxilium-420904/databases/aux-db/documents:runQuery`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({
           structuredQuery: {
             from: [{ collectionId: 'articles' }],
@@ -210,9 +219,7 @@ export class ArticleService {
       const method = documentId === this.NEW_LABEL ? "POST" : "PATCH";
       const response = await fetch(firestorePath, {
         method,
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: this.getHeaders(),
         body: JSON.stringify({
             "fields": {
               "articleId": {
