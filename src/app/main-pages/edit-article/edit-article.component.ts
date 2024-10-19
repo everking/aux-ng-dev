@@ -24,6 +24,7 @@ export class EditArticleComponent implements OnInit {
   category?: string = '';
   subCategory?: string = '';
   imageURI?: string = '';
+  saveMessage: string = '';
 
   constructor(private route: ActivatedRoute, 
     private articleService: ArticleService,
@@ -47,7 +48,7 @@ export class EditArticleComponent implements OnInit {
     this.imageURI = image;
   }
 
-  onSaveClick(): void {
+  async onSaveClick() {
     const article: Article = {
       articleId: this.articleId,
       header: this.header || '',
@@ -60,7 +61,15 @@ export class EditArticleComponent implements OnInit {
         subCategory: this.subCategory
       }
     };
-    this.articleService.saveArticle(article);
+    const isSaved:boolean = await this.articleService.saveArticle(article);
+    if (isSaved) {
+      this.saveMessage = "Saved!";
+      console.log("Saved!");
+    } else {
+      this.saveMessage = "Sorry. Not saved!";
+      console.log("Sorry. Not saved!");
+    }
+
   }
 
   ngOnInit(): void {

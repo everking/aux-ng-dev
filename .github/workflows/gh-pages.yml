@@ -24,7 +24,7 @@ jobs:
       - name: Build the Angular app
         env:
           FIREBASE_API_KEY: ${{ secrets.FIREBASE_API_KEY }}
-        run: node replace-env.js && npm run build -- --configuration production --base-href=/aux-ng-dev/ --project=aux-ng-dev
+        run: source init.sh && npm run build -- --configuration production --base-href=/aux-ng-dev/ --project=aux-ng-dev
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3

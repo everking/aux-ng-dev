@@ -38,6 +38,20 @@ export class LoginService {
     return loginResponse;
   }
 
+  public async sendEmailVerification(idToken: string) {
+    const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:sendOobCode?key=${API_KEY}`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        requestType: 'VERIFY_EMAIL',
+        idToken: idToken  
+      })
+    });
+    return response.json();
+  }
+
   public async signUp (email: string, password: string) {
     const response = await fetch(`https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=${API_KEY}`, {
       method: 'POST',

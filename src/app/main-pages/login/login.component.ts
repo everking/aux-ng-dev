@@ -6,7 +6,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { LoginService, FireBaseLoginResponse } from '../../services/login.service';
-import { ActivatedRoute, Router } from '@angular/router';
+import { ActivatedRoute, Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -16,7 +16,8 @@ import { ActivatedRoute, Router } from '@angular/router';
     ReactiveFormsModule,
     MatFormFieldModule,
     MatInputModule,
-    MatButtonModule
+    MatButtonModule,
+    RouterModule
   ],
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
@@ -25,9 +26,13 @@ import { ActivatedRoute, Router } from '@angular/router';
 export class LoginComponent implements OnInit {
   redirectUrl: string = '/home';
   loginMessage: string = '';
+  actionLabel: string = 'Login';
+  isSignup:boolean = false;
+  email: string = '';
+  password: string = '';
 
   loginForm = new FormGroup({
-    username: new FormControl('', [Validators.required]),
+    email: new FormControl('', [Validators.required]),
     password: new FormControl('', [Validators.required])
   });
 
@@ -39,24 +44,43 @@ export class LoginComponent implements OnInit {
   }
   
   ngOnInit(): void {
+    this.route.url.subscribe((urlSegment) => {
+      const currentRoute = urlSegment[0]?.path;
+      if (currentRoute === 'signup') {
+        this.isSignup = true;
+      } else {
+        this.isSignup = false;
+      }
+    });
     // Get the 'redirect' query parameter
     this.route.queryParams.subscribe(params => {
       this.redirectUrl = params['redirect'] || '/home';
     });
   }
 
-  async onLogin() {
-    const username: string = this.loginForm.get('username')?.value || '';
-    const password: string = this.loginForm.get('password')?.value || '';
-    
-    if (password) {
-      const maskedPassword = password.length > 4 
-        ? '*'.repeat(password.length - 4) + password.slice(-4) 
-        : password;
-      console.log(`Username: ${username}`);
+  getFormData() {
+    this.email = this.loginForm.get('email')?.value || '';
+    this.password = this.loginForm.get('password')?.value || '';
+  }
+  async onSubmit() {
+    this.getFormData();
+    if (!this.isSignup) {
+      this.onLogin();
+    } else {
+      const response: FireBaseLoginResponse = await this.loginService.signUp(this.email, this.password);
+      const response2: FireBaseLoginResponse = await this.loginService.sendEmailVerification(response.idToken);
+    }
+  }
+
+  async onLogin() {    
+    if (this.password) {
+      const maskedPassword = this.password.length > 4 
+        ? '*'.repeat(this.password.length - 4) + this.password.slice(-4) 
+        : this.password;
+      console.log(`Email: ${this.email}`);
       console.log(`Password: ${maskedPassword}`);
 
-      const response: FireBaseLoginResponse = await this.loginService.login(username, password);
+      const response: FireBaseLoginResponse = await this.loginService.login(this.email, this.password);
       if (this.loginService.idToken) {
         console.log(`idToken: ${this.loginService.idToken}`);
         console.log(JSON.stringify(response, null, 2));

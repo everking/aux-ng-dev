@@ -251,13 +251,11 @@ export class ArticleService {
         )
       });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      await response.json();
+      return response.ok;
 
     } catch (error) {
       console.error('Error fetching articles:', error);
+      return false;
     }
   };
 }
