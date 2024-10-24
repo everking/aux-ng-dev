@@ -20,7 +20,7 @@
     }
 
     const data = await response.json();
-    fs.writeFileSync('src/app/all-articles.json', JSON.stringify(data, null, 2));
+    fs.writeFileSync('src/assets/data/all-articles.json', JSON.stringify(data, null, 2));
   } catch (error) {
     console.error('Error:', error);
     process.exit(1);

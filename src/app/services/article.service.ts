@@ -81,8 +81,8 @@ export class ArticleService {
     return this.articles;
   };
 
-  public fetchAllArticlesFromFirestore(): Observable<Article[]> {
-    const url = `${this.BASE_FIRESTORE}/projects/auxilium-420904/databases/aux-db/documents:runQuery`;
+  public fetchAllArticlesFromFirestore(useLocal:boolean = false): Observable<Article[]> {
+    const url = useLocal ? `${this.BASE_FIRESTORE}/projects/auxilium-420904/databases/aux-db/documents:runQuery`;
     const headers: HttpHeaders = new HttpHeaders(this.getHeaders());
     const body = {
       structuredQuery: {
