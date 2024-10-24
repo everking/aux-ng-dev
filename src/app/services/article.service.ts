@@ -1,9 +1,10 @@
-import { Injectable } from '@angular/core';
+import { Injectable, Inject } from '@angular/core';
 import { Article, INVALID_ARTICLE } from "../interfaces/article";
 import { from, map, Observable, of, switchMap, take } from "rxjs";
 import { getHardcodedArticle } from './hardcoded.article';
 import { HttpClient, HttpHeaders } from "@angular/common/http";
 import { LoginService } from './login.service';
+import { DOCUMENT } from '@angular/common';
 
 @Injectable({
   providedIn: 'root'
@@ -12,6 +13,7 @@ import { LoginService } from './login.service';
 export class ArticleService {
   private articles: Article[] = [];
   private articleMap: Map<string, Article> = new Map();
+  private baseHref: string;
   private featuredArticles: string[] = [
     "stories",
     "church-construction-complete",
@@ -25,7 +27,9 @@ export class ArticleService {
   public readonly NEW_LABEL: string = "[ new ]";
   public readonly BASE_FIRESTORE: string = "https://firestore.googleapis.com/v1";
 
-  constructor(private http: HttpClient, private loginService: LoginService) {
+  constructor(@Inject(DOCUMENT) private document: Document, private http: HttpClient, private loginService: LoginService) {
+    const baseElement = this.document.querySelector('base');
+    this.baseHref = (baseElement ? baseElement.getAttribute('href') : '/')!;
   }
 
   public getSingleArticle(articleId: string | null): Observable<Article> {
@@ -52,7 +56,7 @@ export class ArticleService {
       return of(this.articles);
     } else {
       // Obtain featured articles from firestore
-      return this.fetchAllArticlesFromFirestore();
+      return this.fetchAllArticlesFromFirestore(true);
     }
   }
 
@@ -82,7 +86,7 @@ export class ArticleService {
   };
 
   public fetchAllArticlesFromFirestore(useLocal:boolean = false): Observable<Article[]> {
-    const url = useLocal ? `${this.BASE_FIRESTORE}/projects/auxilium-420904/databases/aux-db/documents:runQuery`;
+    const url = useLocal ? "/assets/data/all-articles.json" : `${this.BASE_FIRESTORE}/projects/auxilium-420904/databases/aux-db/documents:runQuery`;
     const headers: HttpHeaders = new HttpHeaders(this.getHeaders());
     const body = {
       structuredQuery: {
