@@ -95,7 +95,7 @@ export class ArticleService {
       }
     };
 
-    return this.http.post(url, body, {headers}).pipe(
+    return (useLocal ? this.http.get(url) : this.http.post(url, body, {headers})).pipe(
       map((documents: any): Article[] => {
 
         const fetchedArticles: Article[] = [];
