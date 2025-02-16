@@ -17,7 +17,7 @@ export interface Article {
   imageURI: string; /* image base64 or URL */
   header: string; /* title */
   body: string; /* HTML body */
-  meta?: ArticleMeta
+  meta: ArticleMeta
 }
 
 export const INVALID_ARTICLE: Article = {
